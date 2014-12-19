@@ -3,7 +3,7 @@ import subprocess
 from watchdog.observers import Observer
 from ISISFileEventHandler import ISISFileEventHandler
 from VersionControlWrapper import VersionControlWrapper
-from constants import *
+from Constants import *
 
 
 class ConfigVersionControl:

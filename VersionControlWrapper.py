@@ -1,7 +1,7 @@
 # Abstraction class to sit between file monitoring functions and Version Control System
 
 from SVNVersionControl import SVNVersionControl
-from constants import *
+from Constants import *
 
 
 class VersionControlWrapper:
