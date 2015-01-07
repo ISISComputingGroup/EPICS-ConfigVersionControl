@@ -1,9 +1,15 @@
 import subprocess
 from watchdog.observers import Observer
-from ISISFileEventHandler import ISISFileEventHandler
-from VersionControlWrapper import VersionControlWrapper
-from Constants import *
+from file_event_handler import ISISFileEventHandler
+from version_control_wrapper import VersionControlWrapper
+from constants import *
 
+class NotUnderVersionControl(Exception):
+    def __init__(self, directory):
+        self._dir = directory
+
+    def __str__(self):
+        return "Folder is not under version control: " + repr(self._dir)
 
 class ConfigVersionControl:
 
@@ -15,9 +21,8 @@ class ConfigVersionControl:
 #       check that supplied directory is under version control
         try:
             self.version_control.info(working_directory)
-
-        except subprocess.CalledProcessError as e:
-            raise Exception("Info failed: Directory may not be under version control")
+        except subprocess.CalledProcessError:
+            raise NotUnderVersionControl(working_directory)
         else:
             if start_observer:
                 event_handler = ISISFileEventHandler(self.version_control)
