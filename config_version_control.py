@@ -1,6 +1,7 @@
 import subprocess
-from watchdog.observers import Observer
-from file_event_handler import ISISFileEventHandler
+#TODO: move filewatcher code to blockserver
+#from watchdog.observers import Observer
+#from file_event_handler import ISISFileEventHandler
 from version_control_wrapper import VersionControlWrapper
 from constants import *
 
@@ -16,22 +17,22 @@ class ConfigVersionControl:
     def __init__(self, working_directory, start_observer=False):
         self.working_directory = working_directory
         self.version_control = VersionControlWrapper(working_directory, SVN_TYPE)
-        self.observer = Observer()
+        #self.observer = Observer()
 
 #       check that supplied directory is under version control
         try:
             self.version_control.info(working_directory)
         except subprocess.CalledProcessError:
             raise NotUnderVersionControl(working_directory)
-        else:
-            if start_observer:
-                event_handler = ISISFileEventHandler(self.version_control)
-                self.observer.schedule(event_handler, working_directory, recursive=True)
-                self.observer.start()
+        #else:
+            #if start_observer:
+                #event_handler = ISISFileEventHandler(self.version_control)
+                #self.observer.schedule(event_handler, working_directory, recursive=True)
+                #self.observer.start()
 
-    def stop(self):
-        self.observer.stop()
-        self.observer.join()
+    #def stop(self):
+        #self.observer.stop()
+        #self.observer.join()
 
 #   i.e. not automatically via the file observer firing an event, but after a new configuration is created
 #   or an existing one updated via the GUI.
