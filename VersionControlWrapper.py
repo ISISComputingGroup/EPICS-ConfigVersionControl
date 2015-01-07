@@ -3,7 +3,6 @@
 from SVNVersionControl import SVNVersionControl
 from Constants import *
 
-
 class VersionControlWrapper:
 
     def __init__(self, working_directory, vc_type):

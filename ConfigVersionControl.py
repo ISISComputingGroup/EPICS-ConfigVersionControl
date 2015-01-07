@@ -1,4 +1,3 @@
-import time
 import subprocess
 from watchdog.observers import Observer
 from ISISFileEventHandler import ISISFileEventHandler
@@ -8,24 +7,24 @@ from Constants import *
 
 class ConfigVersionControl:
 
-    def __init__(self, working_directory):
+    def __init__(self, working_directory, start_observer=False):
         self.working_directory = working_directory
         self.version_control = VersionControlWrapper(working_directory, SVN_TYPE)
+        self.observer = Observer()
+
 #       check that supplied directory is under version control
         try:
             self.version_control.info(working_directory)
 
         except subprocess.CalledProcessError as e:
-            print e
             raise Exception("Info failed: Directory may not be under version control")
         else:
-            event_handler = ISISFileEventHandler(self.version_control)
-            self.observer = Observer()
-            self.observer.schedule(event_handler, working_directory, recursive=True)
-            self.observer.start()
+            if start_observer:
+                event_handler = ISISFileEventHandler(self.version_control)
+                self.observer.schedule(event_handler, working_directory, recursive=True)
+                self.observer.start()
 
     def stop(self):
-#        print "in stop method"
         self.observer.stop()
         self.observer.join()
 
@@ -48,8 +47,7 @@ class ConfigVersionControl:
 #   (i.e. let "host" know what's going on)
 
 if __name__ == "__main__":
-    path = 'C:\Instrument\Apps\EPICS\ISIS\ConfigVersionControl\svnlocal'
+    path = "C:\Instrument\Settings\config\\test_svn\\test_working"
     test = ConfigVersionControl(path)
-    test.update()
-    time.sleep(10)
-    test.stop()
+    while(1):
+        pass
