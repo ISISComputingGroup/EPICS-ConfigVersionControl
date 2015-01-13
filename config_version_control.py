@@ -39,6 +39,9 @@ class ConfigVersionControl:
     def add(self, file_path):
         self.version_control.add(file_path)
 
+    def remove(self, file_path):
+        self.version_control.remove(file_path)
+
 #   and supply a message for the commit (e.g. change to configuration)
 #   i.e. not automatically as explained above
     def commit(self, commit_comment):

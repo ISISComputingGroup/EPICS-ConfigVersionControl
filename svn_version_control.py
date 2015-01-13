@@ -11,7 +11,8 @@ class SVNVersionControl:
 
     def add(self, path):
 #   adds a file to the repository
-        subprocess.Popen("svn add \"" + path + "\"", stdout=subprocess.PIPE)
+        pro = subprocess.Popen("svn add \"" + path + "\"", stdout=subprocess.PIPE)
+        pro.wait()
 
     def commit(self, working_directory, commit_comment):
 #   commits changes to a file to the repository
@@ -19,7 +20,8 @@ class SVNVersionControl:
         curr_dir = os.getcwd()
         os.chdir(working_directory)
 
-        subprocess.Popen("svn commit -m \"" + commit_comment + "\"", stdout=subprocess.PIPE)
+        pro = subprocess.Popen("svn commit -m \"" + commit_comment + "\"", stdout=subprocess.PIPE)
+        pro.wait()
         os.chdir(curr_dir)
 
     def update(self, update_path):
@@ -27,4 +29,8 @@ class SVNVersionControl:
         curr_dir = os.getcwd()
         os.chdir(update_path)
         p = subprocess.Popen("svn update", stdout=subprocess.PIPE)
+        p.wait()
         os.chdir(curr_dir)
+
+    def remove(self, path):
+        subprocess.Popen("svn delete \"" + path + "\"", stdout=subprocess.PIPE)

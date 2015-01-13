@@ -31,3 +31,6 @@ class VersionControlWrapper:
     def update(self, update_path):
 #   update local file from repository
         self.implements.update(update_path)
+
+    def remove(self, path):
+        self.implements.remove(path)
