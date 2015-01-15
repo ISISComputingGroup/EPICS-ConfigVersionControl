@@ -5,6 +5,7 @@ import os
 
 class SVNVersionControl:
 
+    # TODO: Waits with no timeout here!!
     def info(self, working_directory):
 #   returns some information on the repository
         subprocess.check_call(["svn", "info", working_directory], stdout=subprocess.PIPE)
@@ -33,4 +34,5 @@ class SVNVersionControl:
         os.chdir(curr_dir)
 
     def remove(self, path):
-        subprocess.Popen("svn delete \"" + path + "\"", stdout=subprocess.PIPE)
+        pro = subprocess.Popen("svn delete \"" + path + "\"", stdout=subprocess.PIPE)
+        pro.wait()
