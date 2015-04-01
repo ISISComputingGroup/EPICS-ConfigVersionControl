@@ -22,6 +22,9 @@ class GitVersionControl:
             raise NotUnderVersionControl(self._wd)
 
         self.remote = self.repo.remotes.origin
+        config_writer = self.repo.config_writer()
+        # Set git repository to ignore file permissions otherwise will reset to read only
+        config_writer.set_value("core", "filemode", False)
         self._pull()
 
         # Start a background thread for pushing
@@ -31,10 +34,6 @@ class GitVersionControl:
         push_thread.daemon = True  # Daemonise thread
         push_thread.start()
 
-    def _make_repo(self, working_directory):
-        self.repo = Repo.init(working_directory)
-        self.remote = self.repo.create_remote('origin', GIT_REMOTE_LOCATION)
-
     # TODO: Waits with no timeout here!!
     def info(self, working_directory):
         # returns some information on the repository
@@ -43,8 +42,12 @@ class GitVersionControl:
     def add(self, path):
         # adds a file to the repository
         # Add needs write capability on .git folder
-        self._set_permissions()
-        self.repo.index.add([path])
+        try:
+            self.repo.index.add([path])
+        except WindowsError as e:
+            # Most Likely Access Denied
+            self._set_permissions()
+            self.repo.index.add([path])
 
     def commit(self, working_directory, commit_comment):
         # commits changes to a file to the repository and pushes
@@ -59,18 +62,13 @@ class GitVersionControl:
             self.repo.index.checkout()
 
     def remove(self, path):
-        if os.path.isdir(path):
-            to_delete = []
-            for root, dirs, files in os.walk(path, topdown=False):
-                for f in files:
-                    to_delete.append(os.path.join(root, f))
-                for d in dirs:
-                    to_delete.append(os.path.join(root, d))
-            self.repo.index.remove(to_delete)
-            shutil.rmtree(path)
-        else:
-            self.repo.index.remove([path])
-            os.remove(path)
+        delete_list = []
+        for root, dirs, files in os.walk(path, topdown=False):
+            for f in files:
+                delete_list.append(os.path.abspath(os.path.join(root, f)))
+            for d in dirs:
+                delete_list.append(os.path.abspath(os.path.join(root, d)))
+            self.repo.index.remove(delete_list, True)
 
     def _pull(self):
         try:
