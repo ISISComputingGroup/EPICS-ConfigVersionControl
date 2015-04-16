@@ -63,12 +63,15 @@ class GitVersionControl:
 
     def remove(self, path):
         delete_list = []
-        for root, dirs, files in os.walk(path, topdown=False):
-            for f in files:
-                delete_list.append(os.path.abspath(os.path.join(root, f)))
-            for d in dirs:
-                delete_list.append(os.path.abspath(os.path.join(root, d)))
-            self.repo.index.remove(delete_list, True)
+        if os.path.isdir(path):
+            for root, dirs, files in os.walk(path, topdown=False):
+                for f in files:
+                    delete_list.append(os.path.abspath(os.path.join(root, f)))
+                for d in dirs:
+                    delete_list.append(os.path.abspath(os.path.join(root, d)))
+        else:
+            delete_list.append(path)
+        self.repo.index.remove(delete_list, True)
 
     def _pull(self):
         try:
